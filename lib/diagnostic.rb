@@ -22,13 +22,17 @@ end
 # your answer here
 
 #
-# Question 2
+# Behavior Driven Developement is writing tests that check for how the given code should behave instead of whether is works or not.
 #
 # Create a request spec for our Examples API that ensures 'GET /examples'
 # responds successfully and lists all examples.
 
-RSpec.describe 'Examples API' do
-  # your test(s) here
+RSpec.describe 'GET /examples API' do
+  it 'lists all examples' do
+    get '/examples'
+
+    expect(response).to be_success
+  end
 end
 
 #
@@ -37,8 +41,12 @@ end
 # Create a routing spec for our `Examples` resource that ensures
 # GET /examples/:id routes to the examples#show action.
 
-RSpec.describe 'routes for examples' do
-  # your test(s) here
+RSpec.describe 'it routes GET /examples/:id to the examples#show action' do
+  expect(get('/examples/1')).to route_to(
+  controller: 'examples',
+  action: 'show',
+  id: '1'
+)
 end
 
 #
@@ -56,7 +64,16 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
+    before(:each) do
+      post :create, examples: example_params, format: :json
+    end
+
+    it 'is successful' do
+      expect(response).to be_success
+    end
+
+    it 'renders a JSON response' do
+      expect(JSON.parse(response.body)).not_to be_nil
   end
 end
 
@@ -74,7 +91,16 @@ RSpec.describe ExamplesController do
   end
 
   describe 'PATCH update' do
-    # your test(s) here
+    before(:each) do
+    patch :update, id: example.id, example: example_diff, format: :json
+  end
+
+  it 'is successful' do
+    expect(response).to be_success
+  end
+
+  it 'renders a JSON response' do
+    expect(JSON.parse(response.body)).not_to be_nil
   end
 end
 
@@ -90,6 +116,9 @@ RSpec.describe ExamplesController do
   end
 
 at  describe 'DELETE destroy' do
-    # your test(s) here
+  it 'is successful and returns an empty response' do
+      expect(response).to be_success
+
+      expect(response.body).to be_empty
+    end
   end
-end
