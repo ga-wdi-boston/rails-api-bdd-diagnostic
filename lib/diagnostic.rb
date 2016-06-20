@@ -19,7 +19,8 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# BDD is for the most part for everyone to use and check code with. While TDD is
+#mostly for engineers working on the code
 
 #
 # Question 2
@@ -28,7 +29,9 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  it 'routes GET /examples to the examples#index action' do
+    expect(get '/examples').to route_to('examples#index')
+
 end
 
 #
@@ -38,7 +41,12 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  it 'routes GET /examples/:id to the examples#show action' do
+    expect(get '/examples/1').to route_to(
+    controller: 'examples',
+    action: 'show',
+    id: '1'
+    )
 end
 
 #
@@ -56,7 +64,17 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
+    before(:each) do
+      post :create, article: article_params, format: :json
+    end
+
+    it 'is successful' do
+      expect(response.status).not_to be_nil
+    end
+
+    it 'renders a JSON response' do
+      article_response = JSON.parse(response.body)
+      expect(article_response['title']).to eq(article_params[:title])
   end
 end
 
@@ -74,7 +92,12 @@ RSpec.describe ExamplesController do
   end
 
   describe 'PATCH update' do
-    # your test(s) here
+    it "should update email" do
+  @user = subject.example
+  expect {
+    patch :update, id: @user, user: {:examples => "doe@example1.com"}
+    @user.reload
+  }.to change(@user, :examples).to("john.doe@example1.com")
   end
 end
 
@@ -90,6 +113,17 @@ RSpec.describe ExamplesController do
   end
 
 at  describe 'DELETE destroy' do
-    # your test(s) here
-  end
+  it 'deletes an example' do
+     example = Fabricate(:category)
+
+     get "example"
+     expect(response.status).to eq 200
+     expect(JSON.parse(response.body)).to eq([YAML.load(category.to_json),YAML.load(category2.to_json),])
+
+     delete "/examples/#{example.id}"
+     expect(response.status).to eq 200
+
+     get "/examples"
+     expect(JSON.parse(response.body)).to eq([YAML.load(category2.to_json)])
+   end
 end
