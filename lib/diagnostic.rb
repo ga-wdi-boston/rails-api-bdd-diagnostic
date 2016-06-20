@@ -19,7 +19,9 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# behavior driven is more macro - it's what a software team is trying to develop.  the end goals,
+# implementing macro features are parts of behavior driven development.  test driven development is
+# incrementally and on a more micro scale building the features of the desired behaviors of the software
 
 #
 # Question 2
@@ -28,7 +30,14 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  # your test(s)it 'lists all articles' do
+      get '/examples'
+
+      expect(response).to be_success
+
+      examples_response = JSON.parse(response.body)
+      expect(examples_response.length).to eq(examples.count)
+      expect(examples_response.first['title']).to eq(example['title']) here
 end
 
 #
@@ -38,7 +47,11 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  it 'routes GET /examples/:id to the examples#show action' do
+    expect(get '/examples/1').to route_to(
+      controller: 'examples',
+      action: 'show',
+      id: '1'
 end
 
 #
@@ -56,7 +69,12 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
+    before(:each) do
+    post :create, example: example_params, format: :json
+  end
+
+  it 'is successful' do
+    expect(response.status).to eq(201)
   end
 end
 
@@ -74,7 +92,17 @@ RSpec.describe ExamplesController do
   end
 
   describe 'PATCH update' do
-    # your test(s) here
+    before(:each) do
+    patch :update, id: example.id, example: example_diff, format: :json
+  end
+
+  it 'is successful' do
+    expect(response).to be_successful
+  end
+
+  it 'renders a JSON response' do
+    example_response = JSON.parse(response.body)
+    expect(example_response).not_to be_nil
   end
 end
 
@@ -89,7 +117,11 @@ RSpec.describe ExamplesController do
     Example.first
   end
 
-at  describe 'DELETE destroy' do
-    # your test(s) here
+  describe 'DELETE destroy' do
+    it 'is successful and returns an empty response' do
+      delete :destroy, id: example.id, format: :json
+      expect(response).to be_successful
+      expect(response.body).to be_empty
+    end
   end
 end
