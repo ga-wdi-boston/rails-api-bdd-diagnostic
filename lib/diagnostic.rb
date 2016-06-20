@@ -19,7 +19,10 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# Its a method of development where an app is designed be describing how it's
+# behavior would appear to a user. It's meant ot be used to test the
+# functionality of an application. One difference is in explaining the tests,
+# the explanations look more like normal reading than TDD.
 
 #
 # Question 2
@@ -28,7 +31,11 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  describe 'GET /articles' do
+  it 'lists all articles' do
+    get '/articles'
+
+    expect(response).to be_success
 end
 
 #
@@ -38,7 +45,9 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  it 'routes GET /examples to the examples#show action' do
+  expect(get '/examples').to route_to('examples#show')
+end
 end
 
 #
@@ -56,7 +65,17 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
+    before(:each) do
+      post :create, example: example_params, format: :json
+    end
+
+    it 'is successful' do
+      expect(response).to be_success
+      expect(response.status).to eq(201)
+    end
+
+    it 'renders a JSON response' do
+      articles_response = JSON.parse(response.body)
   end
 end
 
@@ -74,7 +93,17 @@ RSpec.describe ExamplesController do
   end
 
   describe 'PATCH update' do
-    # your test(s) here
+    before(:each) do
+      patch :update, example: example_diff, format: :json
+    end
+
+    it 'is successful' do
+      expect(response).to be_success
+      expect(response.status).to eq(201)
+    end
+
+    it 'renders a JSON response' do
+      articles_response = JSON.parse(response.body)
   end
 end
 
@@ -90,6 +119,9 @@ RSpec.describe ExamplesController do
   end
 
 at  describe 'DELETE destroy' do
-    # your test(s) here
+  
+      it 'is successful and returns an empty response' do
+        expect(response). to be_success
+      end
   end
 end
