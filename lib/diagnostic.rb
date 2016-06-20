@@ -19,7 +19,9 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# TDD differs from BDD in that the tests written for TDD could be all at once
+# for the feature. BDD increments from feature to unit while TDD focuses all
+# tests then code and does not go into finer detail.
 
 #
 # Question 2
@@ -28,7 +30,18 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  #   describe 'GET /examples' do
+  #   it 'lists all examples' do
+  #     get '/examples'
+  #examples
+  #     expect(response).to be_success
+  #
+  #     examples_response = JSON.parse(response.body)
+  #     expect(examples_response.length).to eq(examples.count)
+  #     expect(examples_response.first['title']).to eq(examples['title'])
+  #   end
+  # end
+
 end
 
 #
@@ -38,8 +51,14 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
-end
+# it 'routes GET /examples/:id to the examples#show action' do
+#     expect(get '/examples/1').to route_to(
+#       controller: 'examples',
+#       action: 'show',
+#       id: '1'
+#     )
+#   end
+# end
 
 #
 # Question 4
@@ -55,10 +74,20 @@ RSpec.describe ExamplesController do
     }
   end
 
-  describe 'POST create' do
-    # your test(s) here
-  end
-end
+  # describe 'POST create' do
+  #   it 'is successful' do
+  #     get :show, id: article.id
+  #
+  #     expect(response.status).to eq(200)
+  #   end
+  #
+  #   it 'renders a JSON response' do
+  #     get :show, id: examples.id
+  #     examples_response = JSON.parse(response.body)
+  #     expect(examples_response).not_to be_nil
+  #     expect(examples_response['id']).not_to be_nil
+  #   end
+  # end
 
 #
 # Question 5
@@ -74,7 +103,23 @@ RSpec.describe ExamplesController do
   end
 
   describe 'PATCH update' do
-    # your test(s) here
+    # describe 'GET show' do
+    def article_diff
+      { title: 'Two Stupid Tricks' }
+    end
+
+    before(:each) do
+      patch :update, id: example.id, article: example_diff, format: :json
+    end
+    it 'is successful' do
+
+      expect(response.status).to be_successful
+    end
+
+    it 'renders a JSON response' do
+      get :show,
+      examples_response = JSON.parse(response.body)
+      expect(examples_response).not_to be_nil
   end
 end
 
@@ -89,7 +134,11 @@ RSpec.describe ExamplesController do
     Example.first
   end
 
-at  describe 'DELETE destroy' do
-    # your test(s) here
-  end
-end
+#   describe 'DELETE destroy' do
+#  it 'is successful and returns an empty response' do
+#    delete :destroy, id: article.id, format: :json
+#
+#    expect(response).to be_successful
+#    expect(response.body).to be_empty
+#  end
+# end
