@@ -13,13 +13,16 @@ def example
 end
 
 
+
 #
 # Question 1
 #
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# BDD is emerged from TDD. Both incloude having test to drive your software Development.
+# very similar but with different focus. BDD leads the question "What behavior should this object have?"
+# and TDD asks :"How shoudl that function work". TDD focus on implementation and BDD on the behavior.
 
 #
 # Question 2
@@ -28,7 +31,8 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  it 'routes GET /examples to the examples#index action' do
+    expect(get '/examples').to route_to('examples#index')
 end
 
 #
@@ -38,7 +42,12 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  it 'routes GET /examples/:id to the examples#show action' do
+    expect(get '/examples/1').to route_to(
+    controller: 'examples',
+    action: 'show',
+    id: '1'
+    )
 end
 
 #
@@ -56,7 +65,20 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
+    before(:each) do
+    post :create, example: example_params, format: :json
+  end
+
+  it 'is successful' do
+    expect(response.status).to be_success
+    expect(response.status).to eql(201)
+  end
+
+  it 'renders a JSON response' do
+    example_response = JSON.parse(response.body)
+    expect(example_response).not_to be_nil
+    expect(example_response['title']).to eq(example_params[:title])
+  end
   end
 end
 
@@ -74,7 +96,16 @@ RSpec.describe ExamplesController do
   end
 
   describe 'PATCH update' do
-    # your test(s) here
+    before(:each) do
+        patch :update, id: example.id, example: example_diff, format: :json
+      end
+
+      skip 'is successful' do
+      end
+
+      skip 'renders a JSON response' do
+      end
+
   end
 end
 
@@ -90,6 +121,11 @@ RSpec.describe ExamplesController do
   end
 
 at  describe 'DELETE destroy' do
-    # your test(s) here
+  it 'is successful and returns an empty response' do
+   delete :destroy, id: example.id, format: :json
+
+   expect(response).to be_successful
+   expect(response.body).to be_empty
+ end
   end
 end
