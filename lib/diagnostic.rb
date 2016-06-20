@@ -102,7 +102,18 @@ RSpec.describe ExamplesController do
   end
 
   describe 'PATCH update' do
-    # your test(s) here
+    before(:each) do
+      patch :update, id: example.id, example: example_diff, format: :json
+    end
+
+    it 'is successful' do
+      expect(response.status).to be_success
+    end
+
+    it 'renders a JSON response' do
+      example_response = JSON.parse(response.body)
+      expect(example_response).not_to be_nil
+    end
   end
 end
 
@@ -117,7 +128,12 @@ RSpec.describe ExamplesController do
     Example.first
   end
 
-at  describe 'DELETE destroy' do
-    # your test(s) here
+  at  describe 'DELETE destroy' do
+  it 'is successful and returns an empty response' do
+        delete :destroy, id: example.id, format: :json
+
+        expect(response).to be_successful
+        expect(response.body).to be_empty
+      end
+    end
   end
-end
