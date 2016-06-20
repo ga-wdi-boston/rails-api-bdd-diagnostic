@@ -12,7 +12,6 @@ def example
   Example.first
 end
 
-
 #
 # Question 1
 #
@@ -21,6 +20,13 @@ end
 
 # your answer here
 
+# Test driven development is using tests to know if your code works, so you
+# might write a test, it will fail, then you write code to make the test pass,
+# but not in that semantic a way.
+# BDD is similar, but uses tests that read like English so that it is closer
+# to the features, and easier to see how all of the unit tests contribute to the
+# features. It helps design as well as write the software.
+
 #
 # Question 2
 #
@@ -28,7 +34,15 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  describe 'GET /examples' do
+    it 'lists all examples' do
+      get '/examples'
+      expect(response).to be_success
+      examples_response = JSON.parse(response.body)
+      expect(examples_response.length).to eq(examples.count)
+      expect(examples_response.first).to eq(example.first)
+    end
+  end
 end
 
 #
@@ -38,7 +52,13 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  it 'routes GET /examples to the examples#index action' do
+    expect((get '/examples/1')).to route_to(
+      controller: 'examples',
+      action: 'show',
+      id: '1'
+    )
+  end
 end
 
 #
@@ -56,7 +76,14 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
+    it 'is succesful' do
+      expect(response.status).to eq(200)
+    end
+
+    it 'renders a JSON response' do
+      examples_collection = JSON.parse(response.body)
+      expect(examples_collection).not_to be_nil
+    end
   end
 end
 
@@ -74,7 +101,14 @@ RSpec.describe ExamplesController do
   end
 
   describe 'PATCH update' do
-    # your test(s) here
+    it 'is successful' do
+      expect(response).to be_successful
+    end
+
+    it 'renders a JSON response' do
+      example_response = JSON.parse(response.body)
+      expect(example_response).not_to be_nil
+    end
   end
 end
 
@@ -89,7 +123,10 @@ RSpec.describe ExamplesController do
     Example.first
   end
 
-at  describe 'DELETE destroy' do
-    # your test(s) here
+  describe 'DELETE destroy' do
+    it 'is successful and returns an empty response' do
+      expect(response).to be_successful
+      expect(response.body).to be_nil
+    end
   end
 end
