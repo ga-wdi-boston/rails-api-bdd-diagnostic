@@ -18,7 +18,9 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# Behavior Driven Development is a way of developing code where you follow the tests and their errors.
+# It is used to prevent developers from getting side tracked.
+# i dont remember how it differs from test driven dev.
 
 #
 # Question 2
@@ -27,20 +29,30 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  it 'lists all examples' do
+    get '/examples'
+    expect(response).to be_success
+
+    examples_response = JSON.parse(response.body)
+    expect(examples_response.length).to eq(examples.count)
+  end
 end
 
-#
 # Question 3
 #
 # Create a routing spec for our `Examples` resource that ensures
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  it 'routes GET /examples/:id to the examples#show action' do
+    expect(get('/examples/628')).to route_to(
+      controller: 'examples',
+      action: 'show',
+      id: '628'
+    )
+  end
 end
 
-#
 # Question 4
 #
 # Test that a POST action from our ExamplesController is both successful
@@ -54,12 +66,23 @@ RSpec.describe ExamplesController do
     }
   end
 
+  before(:each) do
+    post :create, example: example_params, format: :json
+  end
+
   describe 'POST create' do
-    # your test(s) here
+    it 'is successful' do
+      expect(response).to be_success
+    end
+
+    it 'renders a JSON response' do
+      examples_response = JSON.parse(response.body)
+      expect(examples_response).not_to be_nil
+      expect(examples_response['name']).to eq(example_params[:name])
+    end
   end
 end
 
-#
 # Question 5
 #
 # Test that a PATCH action from our ExamplesController is both successful
@@ -72,12 +95,23 @@ RSpec.describe ExamplesController do
     }
   end
 
+  before(:each) do
+    patch :update, id: example.id, example: example_diff, format: :json
+  end
+
   describe 'PATCH update' do
-    # your test(s) here
+    it 'is successful' do
+      expect(response).to be_success
+    end
+
+    it 'renders a JSON response' do
+      examples_response = JSON.parse(response.body)
+      expect(examples_response).not_to be_nil
+      expect(examples_response['body']).to eq(example_diff[:body])
+    end
   end
 end
 
-#
 # Question 6
 #
 # Test that a DELETE action from our ExamplesController is both successful
@@ -89,7 +123,11 @@ RSpec.describe ExamplesController do
   end
 
   describe 'DELETE destroy' do
-    # your test(s) here
+    it 'is successful and returns an empty response' do
+      delete :destroy, id: example.id
+      expect(response).to be_success
+      expect(response.body).to be_empty
+    end
   end
 end
 
@@ -102,8 +140,36 @@ end
 
 RSpec.describe Example do
   describe 'associations' do
-    # association method here
+    def association
+      described_class.reflect_on_association(:other)
+    end
 
-    # test association with `other` here
+    it 'has an association with comments' do
+      expect(association).to_not be_nil
+      expect(association.name).to eq(:other)
+    end
   end
 end
+
+#
+# RSpec.describe Article do
+#   describe 'associations' do
+#     def association
+#       described_class.reflect_on_association(:comments)
+#     end
+#
+#     it 'has an association with comments' do
+#       p association
+#       expect(association).to_not be_nil
+#       expect(association.name).to eq(:comments)
+#     end
+#
+#     it 'has a set inverse of record' do
+#       expect(association.options[:inverse_of]).to_not be_nil
+#       expect(association.options[:inverse_of]).to eq(:article)
+#     end
+#
+#     it 'destorys associated comments when deleted' do
+#       expect(association.options[:dependent]).to eq(:destroy)
+#     end
+#   end
