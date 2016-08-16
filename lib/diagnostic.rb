@@ -18,7 +18,11 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# Behavior Driven Development is used to test code with different examples
+#that will be used in the actual deployment of the website.  This allows the
+# developer to examine the whole process and see how it could be improved upon.
+# Test Driven Development only tests the actual code to make sure it functions,
+# without regard to what the developer is trying to accomplish.
 
 #
 # Question 2
@@ -27,7 +31,36 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  def example_params
+      {
+        text: 'This is text'
+      }
+    end
+
+    def examples
+      Example.all
+    end
+
+    before(:all) do
+      Example.create!(example_params)
+    end
+
+    after(:all) do
+      Example.delete_all
+    end
+
+
+  describe 'GET /examples' do
+    it 'lists all examples' do
+      get '/Examples'
+        # p response
+      expect(response).to be_success
+
+      examples_response = JSON.parse(response.body)
+      expect(examples_response.length).to eq(examples.count)
+      expect(examples_response.first['body']).to eq(example['body'])
+    end
+  end
 end
 
 #
@@ -37,7 +70,11 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  expect(get('/examples/1')).to route_to(
+      controller: 'examples',
+      action: 'show',
+      id: '1'
+    )
 end
 
 #
@@ -55,7 +92,18 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
+    before(:each) do
+      post :create, example: example_params, format: :json
+    end
+
+    it 'is successful' do
+      expect(response).to be_success
+    end
+
+    it 'renders a JSON response' do
+      examples_response = JSON.parse(response.text)
+      expect(examples_response).not_to be_nil
+      expect(examples_response['text']).to eq(example_params[:text])
   end
 end
 
@@ -72,8 +120,18 @@ RSpec.describe ExamplesController do
     }
   end
 
-  describe 'PATCH update' do
-    # your test(s) here
+  before(:each) do
+    patch :update, id: example.id, example: example_diff, format: :json
+  end
+
+  it 'is successful' do
+    expect(response).to be_success
+  end
+
+  it 'renders a JSON response' do
+    examples_response = JSON.parse(response.body)
+    expect(examples_response).not_to be_nil
+    expect(examples_response['body']).to eq(examples_response_diff[:body])
   end
 end
 
@@ -89,7 +147,10 @@ RSpec.describe ExamplesController do
   end
 
   describe 'DELETE destroy' do
-    # your test(s) here
+    it 'is successful and returns an empty response' do
+        delete :destroy, id: example.id
+        expect(response).to be_success
+        expect(response.body).to be_empty
   end
 end
 
@@ -102,8 +163,12 @@ end
 
 RSpec.describe Example do
   describe 'associations' do
-    # association method here
-
-    # test association with `other` here
+    def association
+      described_class.reflect_on_association(:others)
+    end
+      it 'has an association with others' do
+          p association
+          expect(association).to_not be_nil
+          expect(association.name).to eq(:others)
   end
 end
