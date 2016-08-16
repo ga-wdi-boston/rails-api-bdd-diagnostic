@@ -18,7 +18,15 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# BDD is a way to test code that you or other write. It tests based on the
+# behavior something has. An example of this would be it tests in chunks that
+# have similiar functionality. In the example in class we tested articles and
+# comments. But the underlyig behavior they all had was that each spec file was
+# approached one by one by crud action. So first the get request, then depending
+# on what error it gave(should be routes) following the errors to write working
+# tests from requests through to controller, routing, and models. All which
+# depend on the other tests to get a test to pass. Depending on what you want
+# your code to do, depends on how or what you want each test to accomplish.
 
 #
 # Question 2
@@ -27,7 +35,30 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  def example_params
+    {
+      text: 'This is text'
+    }
+  end
+
+  def examples
+    Example.all
+  end
+
+  def examaple
+    Example.first
+  end
+
+  describe 'GET/examples' do
+    it 'lists all the examples'
+    get '/articles'
+
+    expect(response).to be_success
+
+    examples_response = JSON.parse(response.body)
+    expect(examples_response.length).to eq(examples.count)
+    expect(examples_response.first['text']).to eq(example['text'])
+  end
 end
 
 #
@@ -37,7 +68,19 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+
+describe 'GET/examples/:id' do
+  it 'shows one example' do
+    get "/examples/#{example.id}"
+
+    expect(response).to be_success
+
+    examples_response = JSON.parse(response.body)
+    expect(examples_response['id']).to eq(example['id'])
+  end
+end
+
+end
 end
 
 #
