@@ -18,7 +18,7 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+Behavior 
 
 #
 # Question 2
