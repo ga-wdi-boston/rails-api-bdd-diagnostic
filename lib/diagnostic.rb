@@ -27,7 +27,16 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  describe 'GET /examples' do
+  it 'lists all examples' do
+    get '/examples'
+
+    expect(response).to be_success
+
+    examples_response = JSON.parse(response.body)
+    expect(examples_response.length).to eq(examples.count)
+    # expect(examples_response.first['title']).to eq(example['title'])
+  end
 end
 
 #
@@ -37,7 +46,11 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  get '/examples' => 'examples#index'
+  get '/examples/:id' => 'examples#show'
+  post '/examples' => 'examples#create'
+  patch '/examples/:id' => 'examples#update'
+  delete '/examples/:id' => 'examples#destroy'
 end
 
 #
@@ -55,7 +68,18 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
+    before(:each) do
+    post :create, example: example_params, format: :json
+  end
+
+  it 'is successful' do
+    expect(response).to be_success
+
+  it 'renders a JSON response' do
+    examples_response = JSON.parse(response.body)
+    expect(examples_response).not_to be_nil
+    expect(examples_response['name']).to eq(example_params[:name])
+  end
   end
 end
 
@@ -66,14 +90,26 @@ end
 # and renders a JSON response.
 
 RSpec.describe ExamplesController do
-  def example_diff
-    {
-      body: 'This actually isn\'t that fantastic of an example...'
-    }
-  end
-
   describe 'PATCH update' do
-    # your test(s) here
+    def example_diff
+      {
+        body: 'This actually isn\'t that fantastic of an example...'
+      }
+    end
+
+    before(:each) do
+      patch :update, id: example.id, example: example_diff, format: :json
+    end
+
+    it 'is successful' do
+      expect(response).to be_success
+    end
+
+    it 'renders a JSON response' do
+      examples_response = JSON.parse(response.body)
+      expect(examples_response).not_to be_nil
+      expect(examples_response['body']).to eq(example_diff[:body])
+    end
   end
 end
 
@@ -89,7 +125,12 @@ RSpec.describe ExamplesController do
   end
 
   describe 'DELETE destroy' do
-    # your test(s) here
+    it 'is successful and returns an empty response' do
+      delete :destroy, id: example.id
+
+      expect(response).to be_success
+      expect(response.body).to be_empty
+    end
   end
 end
 
@@ -102,8 +143,34 @@ end
 
 RSpec.describe Example do
   describe 'associations' do
-    # association method here
+    def association
+      described_class.reflect_on_association(:comments)
+    end
 
-    # test association with `other` here
+    it 'has an association with comments' do
+      expect(association).to_not be_nil
+      expect(association.name).to eq(:comments)
+    end
+
+    it 'has as set inverse of record' do
+      expect(association.options[:inverse_of]).not_to be_nil
+      expect(association.options[:inverse_of]).to eq(:article)
+    end
+
+    it 'destroys associated comments when deleted' do
+      expect(association.options[:dependent]).to eq(:destroy)
+    end
+
+    describe 'validations' do
+      it 'valitdates the presence of title and contet for new articles' do
+        expect(
+        Article.create(title: 'Test title', content: 'This is content.')
+        ).to be_valid
+
+        expect(
+        Article.create(content: 'This is content')
+        ).to be_invalid
+      end
+    end
   end
 end
