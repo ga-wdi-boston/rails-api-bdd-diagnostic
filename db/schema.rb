@@ -11,10 +11,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160327214720) do
+ActiveRecord::Schema.define(version: 20160816132043) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "doctors", force: :cascade do |t|
+    t.string   "given_name"
+    t.string   "surname"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "examples", force: :cascade do |t|
     t.text     "text",       null: false
@@ -24,6 +31,41 @@ ActiveRecord::Schema.define(version: 20160327214720) do
   end
 
   add_index "examples", ["user_id"], name: "index_examples_on_user_id", using: :btree
+
+  create_table "ingredients", force: :cascade do |t|
+    t.string   "name"
+    t.string   "unit"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer  "recipe_id"
+  end
+
+  add_index "ingredients", ["recipe_id"], name: "index_ingredients_on_recipe_id", using: :btree
+
+  create_table "others", force: :cascade do |t|
+    t.string   "title"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "patients", force: :cascade do |t|
+    t.string   "given_name"
+    t.string   "surname"
+    t.string   "born_on"
+    t.string   "gender"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer  "doctor_id"
+  end
+
+  add_index "patients", ["doctor_id"], name: "index_patients_on_doctor_id", using: :btree
+
+  create_table "recipes", force: :cascade do |t|
+    t.string   "name"
+    t.string   "family_favorite"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
 
   create_table "users", force: :cascade do |t|
     t.string   "email",           null: false
@@ -37,4 +79,6 @@ ActiveRecord::Schema.define(version: 20160327214720) do
   add_index "users", ["token"], name: "index_users_on_token", unique: true, using: :btree
 
   add_foreign_key "examples", "users"
+  add_foreign_key "ingredients", "recipes"
+  add_foreign_key "patients", "doctors"
 end
