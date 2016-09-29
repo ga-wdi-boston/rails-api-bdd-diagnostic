@@ -18,7 +18,12 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# Bdd is a method of developing code by creating tests first. With Bdd
+# you write the desired outcome of a feature and specify unit tests that,
+# if passed will allow the feature to pass.
+# Test driven development is similar to bdd in that it starts by creating
+# the tests that the code will need to pass but it does not have the
+# same requirements for being designed around a feature.
 
 #
 # Question 2
@@ -27,7 +32,15 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  it 'lists all examples' do
+    get '/examples'
+
+    expect(response).to be_success
+
+    examples_response = JSON.parse(response.body)
+    expect(examples_response.length).to eq(examples.count)
+    expect(examples_response.first['title']).to eq(example[:title])
+  end
 end
 
 #
@@ -37,7 +50,12 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  it 'routes GET /examples/:id to the examples#show action' do
+  expect(get('/examples/1')).to route_to(
+    controller: 'examples',
+    action: 'show',
+    id: '1'
+  )
 end
 
 #
@@ -55,7 +73,18 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
+    before(:each) do
+      post :create, example: example_params, format: :json
+    end
+
+    it 'is successful' do
+      expect(response.status).to eq(201)
+    end
+
+    it 'renders a JSON response' do
+      example_response = JSON.parse(response.body)
+      expect(example_response).not_to be_nil
+    end
   end
 end
 
@@ -73,7 +102,18 @@ RSpec.describe ExamplesController do
   end
 
   describe 'PATCH update' do
-    # your test(s) here
+    before(:each) do
+      patch :update, id: example.id, example: example_diff, format: :json
+    end
+
+    it 'is successful' do
+      expect(response.status).to eq(200)
+    end
+
+    it 'renders a JSON response' do
+      example_response = JSON.parse(response.body)
+      expect(example_response).not_to be_nil
+    end
   end
 end
 
@@ -89,7 +129,11 @@ RSpec.describe ExamplesController do
   end
 
   describe 'DELETE destroy' do
-    # your test(s) here
+    it 'is successful and returns an empty response' do
+      delete :destroy, id: example.id
+      expect(response.status).to eq(204)
+      expect(response.body).to be_empty
+    end
   end
 end
 
@@ -102,8 +146,22 @@ end
 
 RSpec.describe Example do
   describe 'associations' do
-    # association method here
+    def association
+      described_class.reflect_on_association(:other)
+    end
 
-    # test association with `other` here
+    it 'has the name other' do
+      expect(association).to_not be_nil
+      expect(association.name).to eq(:other)
+    end
+
+    it 'has a set inverse of record' do
+      expect(association.options[:inverse_of]).to_not be_nil
+      expect(association.options[:inverse_of]).to eq(:example)
+    end
+
+    it 'deletes associated other when destroyed' do
+      expect(association.options[:dependent]).to eq(:destroy)
+    end
   end
 end
