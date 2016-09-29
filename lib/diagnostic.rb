@@ -18,7 +18,11 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# BDD outputs phrases that verify that you are building the right feature.
+# It outputs statements IN ENGLISH so that people on the team other than
+# engineers are clear what's going on. TDB does not output such phrases, and is
+# only useful to engineers and others who understand the programming language.
+# https://www.toptal.com/freelance/your-boss-won-t-appreciate-tdd-try-bdd
 
 #
 # Question 2
@@ -27,8 +31,19 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  describe 'GET /examples' do
+    it 'lists all examples' do
+      get '/examples'
+
+      expect(response).to be_success
+
+      examples_response = JSON.parse(response.body)
+      expect(examples_response.length).to eq(examples.count)
+      expect(examples_response.first['title']).to eq(example['title'])
+    end
+  end
 end
+# Followed example from yesterday's lesson
 
 #
 # Question 3
@@ -37,8 +52,10 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  it 'routes GET /examples to the examples#index action' do
+  expect(get('/examples')).to route_to('examples#index')
 end
+# Followed example from yesterday's lesson
 
 #
 # Question 4
@@ -55,9 +72,12 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
+    before(:each) do
+      post :create, example: example_params, format: :json
+    end
   end
-end
+
+  # Used yesterday's lesson as a guide
 
 #
 # Question 5
@@ -73,10 +93,13 @@ RSpec.describe ExamplesController do
   end
 
   describe 'PATCH update' do
-    # your test(s) here
+    def example_diff
+      {
+        body: 'This is a better example...'
+      }
+    end
   end
-end
-
+# Used yesterday's example as a guide
 #
 # Question 6
 #
@@ -89,9 +112,12 @@ RSpec.describe ExamplesController do
   end
 
   describe 'DELETE destroy' do
-    # your test(s) here
+    it 'is successful and returns an empty response' do
+      delete :destroy, id: example.id
   end
 end
+
+# Referenced yesterday's lesson
 
 #
 # Question 7
@@ -102,8 +128,10 @@ end
 
 RSpec.describe Example do
   describe 'associations' do
-    # association method here
+    def example_associations
+      described_class.reflect_on_association(:examples)
+    end
 
-    # test association with `other` here
+    # Not sure about here
   end
 end
