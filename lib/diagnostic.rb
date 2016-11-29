@@ -18,7 +18,13 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# BDD is a combination of TDD, domain-driven design and object oriented analysis
+# and design. The purpose of BDD is to allow for better collaboration
+# within development teams and with management by providing shared tools and
+# shared process. Whereas TDD is process of repeating specific tests designed
+# around the requirements. It does little for collaboration.
+
+#source: wikipedia
 
 #
 # Question 2
@@ -27,7 +33,8 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  get '/examples'
+  expect(response).to be_success
 end
 
 #
@@ -37,7 +44,9 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  it 'routes GET /examples/:id to the examples#show action' do
+    expect(get('/examples/1')).to
+  end
 end
 
 #
