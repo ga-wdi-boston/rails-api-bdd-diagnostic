@@ -118,12 +118,12 @@ RSpec.describe ExamplesController do
     end
 
     it 'is successful' do
-      patch :update, id: example.id, example: example_diff, format: :json
+      expect(response.status).to eq(204)
     end
 
     it 'renders a JSON response' do
-      expect(response.status).to eq(204)
-      expect(response.body).to be_empty
+      example_response = JSON.parse(response.body)
+      expect(example_response).not_to be_nil
     end
   end
 end
