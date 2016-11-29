@@ -18,7 +18,10 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# BDD is designed to work by building tests before you code. Write a user store,
+# make a feature test, watch it fail make a unit test, watch it fail,
+# and then get to coding to resolve the failures. This is different than TDD
+# which begins with coding.
 
 #
 # Question 2
@@ -27,17 +30,28 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  it 'lists all examples' do
+    get '/examples'
+    expect(response).to be_success
+    examples_response = JSON.parse(response.body)
+    expect(examples_response.length).to eq(examples.count)
+  end
 end
 
-#
 # Question 3
 #
 # Create a routing spec for our `Examples` resource that ensures
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  it 'shows an example' do
+    get "/examples/#{example.id}"
+    expect(response).to be_success
+    expect(response.status).to eq(204)
+
+    example_response = JSON.parse(response.body)
+    expect(example_response['id']).not_to be_nil
+  end
 end
 
 #
@@ -55,7 +69,13 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
+    it 'creates successfully' do
+      post '/examples', example: example_params
+      expect(response).to be_success
+      example_response = JSON.parse(response.body)
+      expect(example_response['id']).not_to be_nil
+      expect(example_response['name']).to eq(example_params[:name])
+    end
   end
 end
 
@@ -73,7 +93,12 @@ RSpec.describe ExamplesController do
   end
 
   describe 'PATCH update' do
-    # your test(s) here
+    it 'updates' do
+      patch "examples/#{examples.id}", example: example_diff, format: :json
+      expect(respone).to be_success
+      example_response = JSON.parse(response.body)
+      expect(example_response['name']).to eq(example_diff[:name])
+    end
   end
 end
 
@@ -89,7 +114,12 @@ RSpec.describe ExamplesController do
   end
 
   describe 'DELETE destroy' do
-    # your test(s) here
+    it 'deletes' do
+      delete "/example/#{example.id}"
+
+      expect(response).to be_success
+      expeect(response.body).to be_empty
+    end
   end
 end
 
