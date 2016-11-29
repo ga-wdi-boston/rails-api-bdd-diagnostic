@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'rails_helper'
 
 # Instructions:
@@ -19,7 +20,7 @@ end
 # used, and how it differs from Test Driven Development.
 
 # your answer here
-
+# Its used to help drive Development in a meaningful and deliberate sort of way, having a programmer think about problems and writing solutions peice by peice
 #
 # Question 2
 #
@@ -27,7 +28,15 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  it 'lists all examples' do
+
+  get '/examples'
+
+  expect(response).to be_success
+
+  examples_response = JSON.parse(response.body)
+  expect(examples_response.length).to eq(examples.count)
+  expect(examples_response.first['title']).to eq(article['title'])
 end
 
 #
@@ -37,7 +46,11 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+expect(get('/examples/:id')).to route_to(
+controller: 'examples',
+action: 'show',
+id: '1'
+)
 end
 
 #
@@ -55,8 +68,17 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
-  end
+    before(:each) do
+        post :create, example: example_params, format: :json
+      end
+
+      it 'is successful' do
+        expect(response).to be_successful
+      end
+
+      it 'renders a JSON response' do
+        example_response = JSON.parse(response.body)
+        expect(example_response).not_to be_nil  end
 end
 
 #
@@ -72,8 +94,18 @@ RSpec.describe ExamplesController do
     }
   end
 
-  describe 'PATCH update' do
-    # your test(s) here
+  before(:each) do
+  patch :update, id: example.id, example: example_diff, format: :json
+end
+
+it 'is successful' do
+  expect(response.status).to eq(204)
+  expect(response.body).to be_empty
+end
+
+it 'renders a JSON response' do
+  example_response = JSON.parse(response.body)
+  expect(article_response).not_to be_nil
   end
 end
 
@@ -89,7 +121,10 @@ RSpec.describe ExamplesController do
   end
 
   describe 'DELETE destroy' do
-    # your test(s) here
+    delete :destroy, id: example.id
+
+    expect(response.status).to eq(204)
+    expect(response.body).to be_empty
   end
 end
 
@@ -103,7 +138,10 @@ end
 RSpec.describe Example do
   describe 'associations' do
     # association method here
-
+    it "should have many examples" do
+      t = Other.reflect_on_association(:examples)
+      t.macro.should == :has_many
+    end
     # test association with `other` here
   end
 end
