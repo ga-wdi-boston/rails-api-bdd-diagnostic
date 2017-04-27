@@ -19,7 +19,8 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+Behavior Driven Development is top-down testing. Test Driven Development is bottom to top
+It can be done either before or after writing code.
 
 #
 # Question 2
@@ -28,8 +29,23 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  def example_params
+  {
+    title: 'One Weird Trick',
+    content: 'You won\'t believe what happens next...'
+  }
 end
+  describe 'GET /examples' do
+    it 'lists all examples' do
+      get '/examples'
+
+      expect(response).to be_success
+
+      articles_response = JSON.parse(response.body)
+      expect(examples_response.length).to eq(examples.count)
+
+    end
+  end
 
 #
 # Question 3
@@ -39,8 +55,19 @@ end
 
 RSpec.describe 'routes for examples' do
   # your test(s) here
-end
+  it 'routes GET /examples to the examples#index action' do
 
+    expect(get('/examples')).to route_to('examples#index')
+
+  end
+
+  it 'routes GET /examples/:id to the examples#show action' do
+    expect(get('/examples/1')).to route_to(
+    controller: 'examples',
+    action: 'show',
+    id: '1'
+    )
+  end
 #
 # Question 4
 #
@@ -56,8 +83,10 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
+    before(:each) do
+      post :create, params: { example: example_params }
   end
+
 end
 
 #
@@ -74,9 +103,15 @@ RSpec.describe ExamplesController do
   end
 
   describe 'PATCH update' do
-    # your test(s) here
-  end
+    def example_diff
+      { title: 'Two Stupid Tricks' }
+    end
+
+    before(:each) do
+      patch :update, id: example.id,
+                     params: { example: example_diff }
 end
+
 
 #
 # Question 6
@@ -90,9 +125,13 @@ RSpec.describe ExamplesController do
   end
 
   describe 'DELETE destroy' do
-    # your test(s) here
+    it 'is successful and returns an empty response' do
+      delete :destroy, params: { id: example.id }
+
+      expect(response).to be_successful
+      expect(response.body).to be_empty
+    end
   end
-end
 
 #
 # Question 7
