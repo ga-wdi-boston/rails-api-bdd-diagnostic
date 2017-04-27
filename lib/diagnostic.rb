@@ -19,7 +19,8 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# Behavior driven development is derived from test driven development and is
+# focused on the business behaviors of the code
 
 #
 # Question 2
