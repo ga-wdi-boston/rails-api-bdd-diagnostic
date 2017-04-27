@@ -19,7 +19,8 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# behavior driven development is writing code first, then a test that produces the same error,
+# test driven development is writing the test first, then the code to make it pass
 
 #
 # Question 2
@@ -28,7 +29,33 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  def examples
+    Example.all
+  end
+
+  # feature test
+  # we're describing what happens when a get request is made to
+  # /examples
+  describe 'GET /examples' do
+    # we expect the get request to return a list of all the examples
+    it 'lists all examples' do
+      # get is a function that takes a string, and makes a get
+      # request to that address
+      get '/examples'
+      # Expect to get a 20x response (success)
+      expect(response).to be_success
+
+      # sets the variable examples_response to the body of the
+      # http response
+      examples_response = JSON.parse(response.body)
+      # expect the list of examples that we get from the server to be
+      # the same length as the list of examples we created
+      expect(examples_response.length).to eq(examples.count)
+      # check that the first example's title is equal to the example title
+      # that we createds
+      expect(examples_response.first['title']).to eq(example['title'])
+  end
+
 end
 
 #
@@ -38,7 +65,13 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  it 'routes GET /examples/:id to the examples#show action' do
+     expect(get('/examples/1')).to route_to(
+       controller: 'examples',
+       action: 'show',
+       id: '1'
+     )
+  end
 end
 
 #
