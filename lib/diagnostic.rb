@@ -19,7 +19,14 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# Behavior Driven Delvelopment utilizes tools and collaborations between developers, management teams, and bussiness.
+#
+# Test-driven development is a methodology for each unit of software, the developer must:
+#
+#   - define a story;
+#   - make the tests fail;
+#   - then implement the unit;
+#   -  verify that the implementation of the unit makes the tests succeed.
 
 #
 # Question 2
@@ -28,8 +35,23 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
-end
+
+  def examples
+  Example.all
+  end
+
+  def example
+    Example.first
+  end
+
+  describe 'GET /examples/:id' do
+    it 'lists all examples' do
+      get '/examples'
+      expect(response).to be_success
+      examples_response = JSON.parse(response.body)
+      expect(examples_response.length).to eq(examples.count)
+    end
+  end
 
 #
 # Question 3
@@ -38,7 +60,14 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+
+  it 'routes GET /examples/:id to the examples#show action' do
+    expect(get('/examples/1')).to route_to(
+    controller: 'examples',
+    action: 'show',
+    id: '1'
+)
+  end
 end
 
 #
@@ -56,7 +85,8 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
+    before(:each) do
+      post :create, example: example_params, format: :json
   end
 end
 
@@ -74,7 +104,13 @@ RSpec.describe ExamplesController do
   end
 
   describe 'PATCH update' do
-    # your test(s) here
+
+    def example_diff
+      { body: 'This example works fine .' }
+    end
+
+    before(:each) do
+      patch :update, id: example.id, example: example_diff, format: :json
   end
 end
 
@@ -90,8 +126,13 @@ RSpec.describe ExamplesController do
   end
 
   describe 'DELETE destroy' do
-    # your test(s) here
-  end
+    it 'is successful and returns an empty response' do
+      delete :destroy, id: example.id, format: :json
+
+      expect(response).to be_successful
+      expect(response.body).to be_empty
+    end
+      end
 end
 
 #
@@ -103,8 +144,22 @@ end
 
 RSpec.describe Example do
   describe 'associations' do
-    # association method here
 
-    # test association with `other` here
+    # association method here
+      def association
+        described_class.reflect_on_association(:comments)
+      end
+
+      it 'has many comments' do
+        expect(association).to_not be_nil
+        expect(association.options[:inverse_of]).to_not be_nil
+      end
+
+      # test association with `other` here
+      it 'deletes associated comments when destroyed' do
+        expect(association.options[:dependent]).to eq(:destroy)
+
   end
 end
+
+# I don't understand this though  :-()
