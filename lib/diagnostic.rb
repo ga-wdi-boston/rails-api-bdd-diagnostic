@@ -19,7 +19,8 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# A process in developing software where you start with a behavior or user story
+# and make functionality based on that.
 
 #
 # Question 2
@@ -56,7 +57,8 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
+    before(:each) do
+      post :name, body: body
   end
 end
 
@@ -90,7 +92,11 @@ RSpec.describe ExamplesController do
   end
 
   describe 'DELETE destroy' do
-    # your test(s) here
+    it 'is successful and returns an empty response' do
+        delete :destroy, id: user
+
+        expect(response).to be_successful
+        expect(response.body).to be_empty
   end
 end
 
