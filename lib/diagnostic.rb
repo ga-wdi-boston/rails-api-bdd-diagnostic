@@ -20,6 +20,8 @@ end
 # used, and how it differs from Test Driven Development.
 
 # your answer here
+# Behavior Driven Development is accomplished by coding your features first, before building tests to test your code.
+# Test Driven Development is done by writing the tests first and then actually coding your feature.
 
 #
 # Question 2
@@ -29,6 +31,11 @@ end
 
 RSpec.describe 'Examples API' do
   # your test(s) here
+  describe 'GET /examples' do
+    it 'lists all examples' do
+      get '/examples'
+
+      expect(response).to be_success
 end
 
 #
@@ -39,6 +46,12 @@ end
 
 RSpec.describe 'routes for examples' do
   # your test(s) here
+  it 'routes GET /examples/:id to the examples#show action' do
+  expect(get('/examples/1')).to route_to(
+    controller: 'examples',
+    action: 'show',
+    id: '1'
+  )
 end
 
 #
@@ -57,7 +70,16 @@ RSpec.describe ExamplesController do
 
   describe 'POST create' do
     # your test(s) here
-  end
+
+    it 'is succesful' do
+      expect(response).to be_success
+    end
+
+    it 'renders a JSON response' do
+      example_params = JSON.parse(response.body)
+      expect(example_params).not_to be_nil
+      expect(example_params.first['name']).to eq(example['name'])
+    end
 end
 
 #
@@ -75,6 +97,15 @@ RSpec.describe ExamplesController do
 
   describe 'PATCH update' do
     # your test(s) here
+    it 'is successful' do
+      expect(response).to be_success
+    end
+
+    it 'renders a JSON response' do
+      example_diff = JSON.parse(response.body)
+      expect(example_diff).not_to be_nil
+      expect(example_diff[:title]).to eq(example_diff[:title])
+    end
   end
 end
 
@@ -91,6 +122,11 @@ RSpec.describe ExamplesController do
 
   describe 'DELETE destroy' do
     # your test(s) here
+    it 'is successful and returns an empty response' do
+      delete :destroy, params: { id: article.id }
+      expect(response).to be_success
+      expect(response.body).to be_empty
+    end
   end
 end
 
