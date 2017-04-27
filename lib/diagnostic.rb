@@ -19,8 +19,10 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
-
+# it is asking what behavior you wnat to get out of an
+# application.
+# Test Driven Development is a way to see if something passes, then continue
+# onto the next part.
 #
 # Question 2
 #
@@ -28,7 +30,11 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  it 'shows all examples' do
+    get '/articles'
+
+    expect(response).to be_success
+  end
 end
 
 #
@@ -38,7 +44,9 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  it 'routes GET /examples to the examples#index action' do
+    expect(get('/examples')).to route_to('articles#index')
+  end
 end
 
 #
@@ -56,8 +64,15 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
-  end
+    def new_example
+      {
+        name: 'cherry flavor',
+        body: 'pie is good'
+      }
+    end
+    before(:each) do
+      post :create, example: example_params, format: :json
+    end
 end
 
 #
@@ -74,9 +89,24 @@ RSpec.describe ExamplesController do
   end
 
   describe 'PATCH update' do
-    # your test(s) here
-  end
+    def example_diff
+      { body: 'I need to have pie now.' }
+    end
+
+    before(:each) do
+      patch :update, id: example.id, example: example_diff, format: :json
+    end
+
+    it 'is successful' do
+      patch :update, id: example.id, example: example_diff, format: :json
+    end
+
+    it 'renders a JSON response' do
+      expect(response.status).to eq(204)
+      expect(response.body).to be_empty
+    end
 end
+
 
 #
 # Question 6
@@ -87,6 +117,13 @@ end
 RSpec.describe ExamplesController do
   def example
     Example.first
+
+    it 'is successful and returns an empty response' do
+      delete :destroy, id: example.id
+
+      expect(response.status).to eq(204)
+      expect(response.body).to be_empty
+    end
   end
 
   describe 'DELETE destroy' do
