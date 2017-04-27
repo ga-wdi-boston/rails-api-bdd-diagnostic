@@ -20,15 +20,23 @@ end
 # used, and how it differs from Test Driven Development.
 
 # your answer here
-
+# Behavior driven development is top down development based on a feature. You can either write test first or after the coding is done.
+# Test Driven development is where you first write a failing test for a piece of functionality that you hope to create.
+# Then you write code that will eventually cause that test to pass.
 #
 # Question 2
 #
 # Create a request spec for our Examples API that ensures 'GET /examples'
 # responds successfully and lists all examples.
 
-RSpec.describe 'Examples API' do
-  # your test(s) here
+RSpec.describe 'GET /Examples API' do
+  it 'lists all examples' do
+    get '/examples'
+    expect(response).to be_success
+
+    examples_response = JSON.parse(response.body)
+    expect(examples_response.length).to eq(examples.count)
+  end
 end
 
 #
@@ -38,7 +46,9 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  it 'routes GET /examples to the examples#index action' do
+    expect(get('/example')).to route_to('examples#index')
+  end
 end
 
 #
@@ -56,9 +66,18 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
+    before(:each) do
+      post :create, params: { example: example_params }
+    end
+
+    it 'is successful' do
+      expect(response).to be_success
+    end
+
+    it 'renders a JSON response' do
+    end
   end
-end
+  end
 
 #
 # Question 5
@@ -74,7 +93,18 @@ RSpec.describe ExamplesController do
   end
 
   describe 'PATCH update' do
-    # your test(s) here
+    before(:each) do
+      patch :update, params: { id: example.id, example: example_diff }
+    end
+
+    it 'is successful' do
+      expect(response).to be_success
+    end
+
+    it 'renders a JSON response' do
+      expect(example_response).to eq(example_diff[:body])
+    end
+
   end
 end
 
@@ -90,8 +120,12 @@ RSpec.describe ExamplesController do
   end
 
   describe 'DELETE destroy' do
-    # your test(s) here
-  end
+    it 'is successful and returns an empty response' do
+      delete :destroy, params: { id: example.id }
+
+      expect(response).to be_success
+      expect(response.body).to be_empty
+    end
 end
 
 #
@@ -107,4 +141,5 @@ RSpec.describe Example do
 
     # test association with `other` here
   end
+end
 end
