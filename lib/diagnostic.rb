@@ -13,14 +13,17 @@ def example
   Example.first
 end
 
-#
+#comfort: 1
+#clarity: 1
 # Question 1
 #
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
-
+# Behavior driven development starts with the larger picture of how things are
+# supposed to operate and works down from there.  It takes 'what the system is
+# supposed to do' and works on why it does those things. Test driven development
+# works in a similar way, but with less emphesis on users.
 #
 # Question 2
 #
@@ -28,17 +31,30 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  describe 'GET examples' do
+    it 'shows examples' do
+      get "/examples"
+      expect(response).to be_success
+      example_response = JSON.parse(response.body)
+      expect(example_response).not_to be_nil
+    end
+  end
+# I really don't understand any of this testing stuff, honestly
 end
 
 #
 # Question 3
-#
+
 # Create a routing spec for our `Examples` resource that ensures
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  it 'routes GET /examples to the examples#show action' do
+      expect(get('examples')).to route_to(
+        controller: 'examples',
+        action: 'show'
+      )
+    end
 end
 
 #
@@ -55,8 +71,19 @@ RSpec.describe ExamplesController do
     }
   end
 
-  describe 'POST create' do
-    # your test(s) here
+describe 'POST create' do
+    before(:each) do
+      post :create, example: example_params, format: :json
+    end
+
+    it 'is successful' do
+      expect(response.status).to eq(201)
+    end
+
+    it 'renders a JSON response' do
+      example_response = JSON.parse(response.body)
+      expect(example_response).not_to be_nil
+    end
   end
 end
 
