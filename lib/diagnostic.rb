@@ -19,7 +19,10 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+Behavior Driven Development is meant to be used before you start coding to determine
+all types of bugs. Test Driven Development limits the amount of bugs you can catch.
+Behavior Driven Development allows you to check for feature tests and unit tests.
+(For both the user and the developer).
 
 #
 # Question 2
@@ -28,7 +31,13 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  get "/examples/#{example.id}"
+
+      expect(response).to be_success
+
+      example_response = JSON.parse(response.body)
+      expect(example_response['id']).to eq(example['id'])
+      expect(example_response['API']).to eq(example['API'])
 end
 
 #
@@ -38,7 +47,13 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  it 'routes GET /examples/:id to the examples#show action' do
+      expect(get('/examples/1')).to route_to(
+        controller: 'examples',
+        action: 'show',
+        id: '1'
+      )
+
 end
 
 #
@@ -56,7 +71,8 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
+    before(:each) do
+        post :name, body: example_params, format: :json
   end
 end
 
