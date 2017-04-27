@@ -19,7 +19,10 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# Behavior driven development is writing code and having it initate an error then writing a test to validates that error,
+# the writing code that passes the tests, then running the previous tests to see if your new code passes.
+
+#Test Driven Development is a specific order of testing and writing cdode--> 1. write the test, run the test, write the code, run the test, refactor the code, run the test...
 
 #
 # Question 2
@@ -28,7 +31,13 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+
+
+  describe 'GET/examples' do
+    it 'list all examples'
+
+    expect(response).to be_success
+  end
 end
 
 #
@@ -38,7 +47,16 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+
+  describe 'GET/examples/:id' do
+    it 'show one example' do
+      get"/examples/#{example.id}"
+
+      expect(response).to be_success
+      example_response = JSON.parse(response.body)
+      expect(example_response['id']).not_to be_nill
+    end
+  end
 end
 
 #
@@ -48,15 +66,20 @@ end
 # and renders a JSON response.
 
 RSpec.describe ExamplesController do
-  def example_params
-    {
-      name: 'Example name',
-      body: 'What a fantastic example this is...'
-    }
-  end
-
-  describe 'POST create' do
+  describe 'POST /examples' do
+    def example_params
+      {
+        name: 'Example name',
+        body: 'What a fantastic example this is...'
+      }
+    end
+    it 'creates a new example' do
     # your test(s) here
+    post '/examples', params: { example: new_example }
+
+    expect(response).to be_success
+    example_response = JSON.parse(response.body)
+    expect(example_response['id']).not_to be_nil
   end
 end
 
@@ -67,14 +90,19 @@ end
 # and renders a JSON response.
 
 RSpec.describe ExamplesController do
-  def example_diff
-    {
-      body: 'This actually isn\'t that fantastic of an example...'
-    }
-  end
 
-  describe 'PATCH update' do
+  describe 'PATCH /examples/:id' do
+    def example_diff
+      {
+        body: 'This actually isn\'t that fantastic of an example...'
+      }
+    end
+    it 'updates an example'
     # your test(s) here
+    patch "/examples/#{examples.id}", params: { examples: example_diff }
+    expect(response).to be_success
+    expect(response.body).to be_empty
+    expect(example[:body]).to eq(article_diff[:body])
   end
 end
 
@@ -86,11 +114,12 @@ end
 
 RSpec.describe ExamplesController do
   def example
-    Example.first
+    Examples.first
   end
 
   describe 'DELETE destroy' do
     # your test(s) here
+    delete "examples/#{example_id}"
   end
 end
 
