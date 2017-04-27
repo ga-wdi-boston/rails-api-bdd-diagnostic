@@ -19,7 +19,7 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# Behavior Driven Development involves testing software in terms of its desired behavior.  This desired behavior can come in the form of business requirements.  In an agile setting, the behavior may be based more specifically on the user stories.  It differs from test driven development in that it is "top-down" testing, and can be done before or after writing code.  Test Driven Development is "bottom-up" testing, meaning that unit tests are written first.
 
 #
 # Question 2
@@ -28,8 +28,17 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
-end
+    describe 'GET /examples' do
+      it 'lists all examples' do
+        get '/examples'
+
+        expect(response).to be_success
+
+        articles_response = JSON.parse(response.body)
+        expect(examples_response.length).to eq(example.count)
+        expect(examples_response.first['title']).to eq(example['title'])
+      end
+    end
 
 #
 # Question 3
@@ -38,7 +47,13 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  it 'routes GET /examples/:id to the examples#show action' do
+  expect(get('/examples/1')).to route_to(
+    controller: 'examples',
+    action: 'show',
+    id: '1'
+    )
+end
 end
 
 #
@@ -48,17 +63,17 @@ end
 # and renders a JSON response.
 
 RSpec.describe ExamplesController do
-  def example_params
-    {
-      name: 'Example name',
-      body: 'What a fantastic example this is...'
-    }
-  end
-
   describe 'POST create' do
-    # your test(s) here
+    before(:each) do
+      post :create, params: { example: example_params }
+    end
+
+    it 'is successful' do
+    end
+
+    it 'renders a JSON response' do
+    end
   end
-end
 
 #
 # Question 5
