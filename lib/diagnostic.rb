@@ -28,7 +28,23 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+
+  def examples
+  # returns a list of all articles
+  Example.all
+  end
+
+  describe 'GET /examples' do
+    it 'pulls all examples' do
+      # tets that response was sucessful
+      get '/examples'
+      expect(response).to be_success
+
+      examples_response = JSON.parse(response.body)
+
+      expect(examples_response.length).to eq(examples.count)
+    end
+  end
 end
 
 #
@@ -38,7 +54,13 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  it 'routes GET /examples/:id to the examples#show action' do
+    expect(get('examples/1')).to route_to(
+        controller: 'examples',
+        action: 'show',
+        id: '1'
+    )
+  end
 end
 
 #
@@ -56,8 +78,18 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
-  end
+    before(:each) do
+      post :create, params: { example: example_params }, format: :json
+    end
+
+    it 'is successful' do
+      expect(response).to be_successful
+    end
+
+    it 'renders a JSON response' do
+      examples_response = JSON.parse(response.body)
+      expect(examples_response).not_to be_nil
+    end
 end
 
 #
@@ -67,6 +99,13 @@ end
 # and renders a JSON response.
 
 RSpec.describe ExamplesController do
+  def example_params
+    {
+      name: 'Example name',
+      body: 'What a fantastic example this is...'
+    }
+  end
+
   def example_diff
     {
       body: 'This actually isn\'t that fantastic of an example...'
@@ -74,7 +113,21 @@ RSpec.describe ExamplesController do
   end
 
   describe 'PATCH update' do
-    # your test(s) here
+    before(:each) do
+      patch :update, params: {
+        id: article.id,
+        article: article_diff
+      },
+                     format: :json
+  end
+
+  it 'is successful' do
+    expect(response.status).to eq(204)
+  end
+
+  it 'renders a JSON response' do
+    examples_response = JSON.parse(response.body)
+    expect(examples_response).not_to be_nil
   end
 end
 
@@ -90,7 +143,12 @@ RSpec.describe ExamplesController do
   end
 
   describe 'DELETE destroy' do
-    # your test(s) here
+    it 'is successful and returns an empty response' do
+      delete :destroy, params: { id: example.id }
+
+      expect(response).to be_successful
+      expect(response.body).to be_empty
+    end
   end
 end
 
@@ -104,7 +162,9 @@ end
 RSpec.describe Example do
   describe 'associations' do
     # association method here
-
+    def association
+      described_class.reflect_on_association(:other)
+    end
     # test association with `other` here
   end
 end
