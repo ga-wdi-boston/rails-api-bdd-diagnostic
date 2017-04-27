@@ -19,7 +19,9 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# BBD is a way to document and test your code as you are writting an application. BBD breaks your app into feature chunks. You write a test for each feature, run the test(to make sure it can fail), write unit tests, run the unit test( to make sure it can fail), write code to pass the unit test. You continue writing tests, code and running the tests until you've successfully created the feature. You continue to build your application following those steps.
+
+# TDD is similar to BDD, but you write your unit tests first, then write the code to pass those tests and then write your feature test.
 
 #
 # Question 2
@@ -28,7 +30,15 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  describe 'GET /examples' do
+    it 'lists all examples' do
+      get '/examples'
+      expect(response).to be_success
+      examples_response = JSON.parse(response.body)
+      expect(examples_response.length).to eq(example.count)
+      expect(examples_response.first['text']).to eq(example['text'])
+    end
+  end
 end
 
 #
@@ -38,7 +48,15 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  it 'routes GET /examples/:id to the examples#show action' do
+      expect(get('examples/1')).to route_to(
+        {
+          controller: 'examples',
+          action: 'show',
+          id: '1'
+        }
+      )
+  end
 end
 
 #
@@ -56,7 +74,16 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
+  end
+
+    it 'is successful' do
+      expect(response.status).to eq(204)
+    end
+
+    it 'renders a JSON response' do
+      examples_response = JSON.parse(response.body)
+      expect(example_response).not_to be_nil
+    end
   end
 end
 
