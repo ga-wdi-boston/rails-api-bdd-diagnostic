@@ -19,7 +19,11 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# BBD tests are generated with the statement As a User, I want to do some Action,
+# So I can ...., You write you code to make the statement work.
+# While TDD, you write you tests first, they are failing, then
+# you write the code(classes) that make the tests pass. These are similar to
+# Unit Tests.
 
 #
 # Question 2
@@ -28,7 +32,13 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  def examples
+    Example.all
+  end
+
+  def example
+    Example.first
+  end
 end
 
 #
@@ -38,7 +48,15 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  it 'routes GET /examples to the examples#index action' do
+    # setup
+
+    # action
+
+    # assert
+    expect(get('examples')).to route_to('examples#index')
+    # teardown
+  end
 end
 
 #
@@ -56,7 +74,15 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
+    before(:each) do
+      post :create, params: { example: example_params }
+    end
+
+    skip 'is successful' do
+    end
+
+    skip 'renders a JSON response' do
+    end
   end
 end
 
@@ -74,7 +100,20 @@ RSpec.describe ExamplesController do
   end
 
   describe 'PATCH update' do
-    # your test(s) here
+    before(:each) do
+      patch :update, id: example.id,
+      params: { example: example_diff }
+    end
+
+    it 'is successful' do
+      expect(response).to be_success
+    end
+
+    it 'return an empty repsonse' do
+      example_response = JSON.parse(response.body)
+      expect(example_response).to be_empty
+      expect(example_response[:body]).to eq(example_response[:body])
+    end
   end
 end
 
@@ -90,7 +129,12 @@ RSpec.describe ExamplesController do
   end
 
   describe 'DELETE destroy' do
-    # your test(s) here
+    it 'is successful and returns an empty response' do
+      delete :destroy, params: {id: example.id}
+
+      expect(response).to be_successful
+      expect(response.body).to be_empty
+    end
   end
 end
 
