@@ -19,7 +19,11 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# Behavior Driven Development is top-down testing. It can be done either before
+# or after writing code.  BDD is about writing a feature (a fancy curl request
+# written in Ruby) and having that initiate an error (a routing error), then
+# writing a unit that shows the same error (a routing unit test), then
+# writing the code that passes it
 
 #
 # Question 2
@@ -28,7 +32,33 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  def examples
+    Example.all
+  end
+
+  def article
+    Example.first
+  end
+
+  before(:all) do
+    Example.create!(example_params)
+  end
+
+  after(:all) do
+    Example.delete_all
+  end
+
+  describe 'GET /examples' do
+    it 'lists all examples' do
+      get '/examples'
+
+      expect(response).to be_success
+
+      articles_response = JSON.parse(response.body)
+      expect(articles_response.length).to eq(articles.count)
+      expect(articles_response.first['name']).to eq(article['name'])
+    end
+  end
 end
 
 #
@@ -38,7 +68,13 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  it 'routes GET /examples/:id to the examples#show action' do
+    expect(get('/examples/1')).to route_to(
+      controller: 'examples',
+      action: 'show',
+      id: '1'
+    )
+  end
 end
 
 #
@@ -56,7 +92,18 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
+    before(:each) do
+      post :create, params: { example: example_params }
+    end
+
+    it 'is successful' do
+      expect(response).to be_success
+    end
+
+    it 'renders a JSON response' do
+      expect(response.body).not_to be_nil
+      expect(response.status).to eq(201)
+    end
   end
 end
 
@@ -74,7 +121,16 @@ RSpec.describe ExamplesController do
   end
 
   describe 'PATCH update' do
-    # your test(s) here
+    before(:each) do
+    patch :update, params: { id: example.id, example: example_diff }
+  end
+
+  it 'is successful' do
+    expect(response).to be_success
+  end
+
+  it 'returns an empty response' do
+    expect(response.body).to be_empty
   end
 end
 
