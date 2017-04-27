@@ -19,7 +19,8 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# BDD is top-down testing,.   Writing a feature and then building a spec that
+# tests what that feature should be doing.
 
 #
 # Question 2
@@ -28,7 +29,15 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  it 'lists all examples' do
+    get '/examples'
+
+    expect(response).to be_success
+
+    examples_response = JSON.parse(response.body)
+    expect(examples_response.length).to eq(examples.count)
+    expect(examples_response.first['title']).to eq(example['title'])
+  end
 end
 
 #
@@ -38,7 +47,13 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  it 'routes GET /examples/:id to the examples#show action' do
+    expect(get('/examples/1')).to route_to(
+      controller: 'examples',
+      action: 'show',
+      id: '1'
+    )
+  end
 end
 
 #
@@ -56,7 +71,17 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
+    before(:each) do
+      post :create, params: { example: new_example }, format: :json
+    end
+    it 'is successful' do
+      expect(response.status).to eq(201)
+    end
+
+   it 'renders a JSON response' do
+      example_response = JSON.parse(response.body)
+      expect(example_response).not_to be_nil
+    end
   end
 end
 
@@ -74,7 +99,17 @@ RSpec.describe ExamplesController do
   end
 
   describe 'PATCH update' do
-    # your test(s) here
+    before(:each) do
+      patch :update, params: { id: example.id, example: example_diff }
+    end
+
+    it 'is successful' do
+      expect(response).to be_success
+    end
+
+    it 'renders an empty response' do
+      expect(response.body).to be_empty
+    end
   end
 end
 
@@ -90,9 +125,14 @@ RSpec.describe ExamplesController do
   end
 
   describe 'DELETE destroy' do
-    # your test(s) here
+    before(:each) do
+      delete :destroy, params: { id: example.id }
+    end
+    it 'is successful and returns an empty response' do
+      expect(response).to be_successful
+      expect(response.body).to be_empty
+    end
   end
-end
 
 #
 # Question 7
@@ -103,8 +143,6 @@ end
 
 RSpec.describe Example do
   describe 'associations' do
-    # association method here
-
-    # test association with `other` here
+    it { expect(other).to have_many(:examples) }
   end
 end
