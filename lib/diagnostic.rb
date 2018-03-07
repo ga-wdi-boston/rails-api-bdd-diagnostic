@@ -19,7 +19,15 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# BDD is a methodology whereby tests are created in order to simplify the
+# creation and subsequent refactors/maintanence of your application code.
+# It is meant to be used in an iterative way where you start with a feature
+# test which is aligns with your feature user story.  You then create
+# iteratively narrower unit tests.  These test individual functions or chunks
+# of code until the feature test works.
+
+# Test driven design is the process of writing and running your tests in order
+# verify specific functions work
 
 #
 # Question 2
