@@ -19,7 +19,9 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# Behavior driven development refers to a testing method that results in
+# developing tests fo functionality as you need them. Test driven Development
+# refers to a testing method whereby you develop tests after-the-fact.
 
 #
 # Question 2
@@ -28,7 +30,19 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+
+  describe 'GET /examples' do
+    it 'lists all examples' do
+      get '/examples'
+
+      expect(response).to be_success
+
+      parsed_resp = JSON.parse(response.body)
+      expect(parsed_resp.length).to eq(examples.count)
+      expect(parsed_resp.first['some_property']).to eq(article['some_property'])
+    end
+  end
+
 end
 
 #
@@ -38,7 +52,15 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+
+  it 'routes GET /examples/:id to the examples#show action' do
+    expect(get('/examples/3')).to route_to(
+      controller: 'examples',
+      id: '3',
+      action: 'show'
+    )
+  end
+
 end
 
 #
@@ -74,7 +96,19 @@ RSpec.describe ExamplesController do
   end
 
   describe 'PATCH update' do
-    # your test(s) here
+    before(:each) do
+      patch :update, params: { id: example.id, example: example_diff }
+    end
+
+    it 'is successful' do
+      expect(response).to be_success
+    end
+
+    it 'renders a JSON response' do
+      parsed_response = JSON.parse(response.body)
+      expect(parsed_response['body']).to eq(example_diff[:body])
+    end
+
   end
 end
 
@@ -90,7 +124,20 @@ RSpec.describe ExamplesController do
   end
 
   describe 'DELETE destroy' do
-    # your test(s) here
+    prior_example = example
+
+    before(:each) { get :destroy, params: { id: example.id } }
+
+    it 'is successful and returns an empty response' do
+      expect(response.status).to eq(204)
+      expect(response.body).to be_empty
+    end
+
+    it 'is successful and the resource is deleted' do
+      new_example = example
+      expect(prior_example['body']).to_not eq(new_example['body'])
+    end
+
   end
 end
 
