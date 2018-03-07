@@ -19,7 +19,14 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# Behavior Driven Developemnt uses tests to build code against, and to ensure
+# that future changes don't introduce new bugs. It can be written at the begining
+# or end of the development cycle.
+# Behavior Driven Development involves feature testing from the top down, as
+# opposed to Test Driven Development which involves unit testing.
+# BDD is treats methods like a black box and just checks for the functionality
+# of a feature, as a user might interact with it. TDD tests individual methods and
+# granular functionality.
 
 #
 # Question 2
@@ -29,6 +36,18 @@ end
 
 RSpec.describe 'Examples API' do
   # your test(s) here
+
+describe 'GET /examples' do
+  it 'lists all examples' do
+    get '/examples'
+
+    expect(response).to be_success
+
+    examples_response = JSON.parse(response.body)
+    expect(examples_response.length).to eq(examples.count)
+  end
+end
+
 end
 
 #
@@ -38,7 +57,11 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  it 'routes GET /examples/:id to the examples#show action' do
+    expect(get('/examples/1')).to route_to( :controller => 'examples',
+                                            :action => 'show',
+                                            :id => '1')
+  end
 end
 
 #
