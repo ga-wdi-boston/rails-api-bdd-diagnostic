@@ -19,7 +19,9 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# BDD is top-down testing, which can be done either before or after writing code.
+# You write a feature, then look for errors. It differs from TDD by not writing
+# tests.
 
 #
 # Question 2
@@ -28,7 +30,9 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  def examples
+    Example.all
+  end
 end
 
 #
@@ -38,7 +42,13 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  it 'routes GET /examples/:id/ to the comments#index action' do
+    expect(get('/examples/1/')).to route_to(
+      controller: 'examples',
+      action: 'show',
+      example_id: '1'
+    )
+  end
 end
 
 #
@@ -56,7 +66,30 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
+    before(:each) { get :show, params: { id: example.id } }
+    it 'is successful' do
+      expect(response.status).to eq(200)
+    end
+
+    it 'renders a JSON response' do
+      example_response = JSON.parse(response.body)
+      expect(example_response).not_to be_nil
+    end
+  end
+
+  describe 'POST create' do
+    before(:each) do
+      post :create, params: { example: example_params }, format: :json
+    end
+
+    it 'is successful' do
+      expect(response).to be_successful
+    end
+
+    it 'renders a JSON response' do
+      example_response = JSON.parse(response.body)
+      expect(example_response).not_to be_nil
+    end
   end
 end
 
@@ -67,14 +100,25 @@ end
 # and renders a JSON response.
 
 RSpec.describe ExamplesController do
-  def example_diff
-    {
-      body: 'This actually isn\'t that fantastic of an example...'
-    }
-  end
-
   describe 'PATCH update' do
-    # your test(s) here
+    def example_diff
+      {
+        body: 'This actually isn\'t that fantastic of an example...'
+      }
+    end
+
+    before(:each) do
+      patch :update, params: {
+        id: example.id,
+        example: example_diff
+      },
+                     format: :json
+    end
+
+    it 'is successful and returns an empty response' do
+      expect(response.status).to eq(204)
+      expect(response.body).to be_empty
+    end
   end
 end
 
@@ -90,7 +134,12 @@ RSpec.describe ExamplesController do
   end
 
   describe 'DELETE destroy' do
-    # your test(s) here
+    it 'is successful and returns an empty response' do
+      delete :destroy, params: { id: example.id }
+
+      expect(response).to be_successful
+      expect(response.body).to be_empty
+    end
   end
 end
 
