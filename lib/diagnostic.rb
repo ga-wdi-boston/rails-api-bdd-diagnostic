@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 require 'rails_helper'
-
+//
 # Instructions:
 # The tests you build for this diagnostic are not expected to pass.
 # Merely provide a test for each given scenario.
