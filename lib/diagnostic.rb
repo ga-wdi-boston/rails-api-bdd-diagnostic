@@ -19,7 +19,9 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+bdd is top down testing, where unit tests are written first and features are
+tested afterwards. this type of testing can be done before or after the code
+has been written.
 
 #
 # Question 2
@@ -28,7 +30,10 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+
+def examples
+  Example.all
+end
 end
 
 #
@@ -38,7 +43,8 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  it 'routes GET /examples to the articles#index action' do
+    expect(get('/examples')).to route_to('examples#index')
 end
 
 #
