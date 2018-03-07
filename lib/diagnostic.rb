@@ -19,7 +19,11 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# BDD is the process of testing the expected output of of your program. It involves
+# running a feature test and many unit tests. The unit tests are for smaller, individual parts
+# of the app, while the feature test tests the whole feature. TDD is when you write tests
+# that will fail on the first attempt, and then wirte the code to get them to pass. Once they
+# pass, you can refactor your code and run it again to ensure it still passes
 
 #
 # Question 2
@@ -28,7 +32,22 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  describe 'GET index' do
+    before(:each) { get :index } # haven't written the code for this
+  end
+
+  it 'is successful' do
+    expect(response.status).to eq(200)
+  end
+
+  it 'renders a JSON response' do
+    expect(response.body).not_to be_empty
+
+    articles_list = JSON.parse(response.body)
+    expect(articles_list).to be_a(Array)
+    expect(articles_list.first['something']).to eq(article_params[:something]) # this part only works if you set it up prior to the test running.
+  end
+
 end
 
 #
@@ -38,7 +57,12 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+
+  it 'routes GET /examples/:id to the examples#show action' do
+  expect(get('/examples/3')).to route_to(controller: 'examples',
+                                         action: 'show',
+                                         id: '3')
+end
 end
 
 #
@@ -56,7 +80,7 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
+    # didn't cover in class. Will come back to it
   end
 end
 
@@ -74,7 +98,22 @@ RSpec.describe ExamplesController do
   end
 
   describe 'PATCH update' do
-    # your test(s) here
+
+    before(:each) do
+      patch :update, params: { id: article.id, article: article_diff }
+    end
+
+    it 'is successful' do
+      expect(response).to be_success
+    end
+
+    it 'renders a JSON response' do
+      updated_article = JSON.parse(response.body)
+      expect(updated_article['body']).to eq(article_diff[:body])
+    end
+
+
+
   end
 end
 
@@ -90,7 +129,11 @@ RSpec.describe ExamplesController do
   end
 
   describe 'DELETE destroy' do
-    # your test(s) here
+    before(:each) { delete :destroy, params: { id: example.id } }
+      it 'is successful and returns an empty response' do
+        expect(response.body).to be_empty
+        expect(response).to be_success
+      end
   end
 end
 
