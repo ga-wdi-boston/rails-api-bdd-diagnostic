@@ -19,7 +19,8 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# your answer here: BDD is meant to be a top down test. It allows you to to test
+# a feature before, or after you've written code.
 
 #
 # Question 2
@@ -28,7 +29,15 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  def article_params
+    {
+      title: 'One Weird Trick',
+      content: 'You won\'t believe what happens next...'
+    }
+end
+
+def articles
+  Article.all
 end
 
 #
