@@ -19,7 +19,18 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+Behavior Driven Development focuses on unit testing.  Unit tests isolate small
+pieces of code so that you can be more specific with finding bugs.
+
+Test Driven Development relies on the repitition of a cycle that consists of
+the following steps:
+
+Add a test
+Run all tests and see if the new one fails
+Write some code
+Run tests
+Refactor code
+Repeat
 
 #
 # Question 2
@@ -28,7 +39,12 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  it 'lists all examples' do
+    get '/examples'
+
+    expect(response).to be_success
+    examples_response = JSON.parse(response.body)
+    expect(examples_response.length).to eq(examples.count)
 end
 
 #
@@ -38,7 +54,11 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  it 'routes GET /examples/:id to the examples#show action' do
+    expect(get('examples/3')).to route_to(controller: 'examples',
+                                          action: 'show',
+                                          id: '3')
+                                        end
 end
 
 #
@@ -56,7 +76,13 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
+    @example = current_user.examples.build(example_params)
+
+  if @example.save
+    render json: @example, status: :created
+  else
+    render json: @example.errors, status: :unprocessable_entity
+  end
   end
 end
 
@@ -74,7 +100,11 @@ RSpec.describe ExamplesController do
   end
 
   describe 'PATCH update' do
-    # your test(s) here
+    if @example.update(example_params)
+      head :no_content
+    else
+      render json: @example.errors, status: :unprocessable_entity
+    end
   end
 end
 
@@ -90,7 +120,9 @@ RSpec.describe ExamplesController do
   end
 
   describe 'DELETE destroy' do
-    # your test(s) here
+    @example.destroy
+
+    head :no_content
   end
 end
 
@@ -103,8 +135,10 @@ end
 
 RSpec.describe Example do
   describe 'associations' do
-    # association method here
+    belongs_to :other
+    validates :text, :user, presence: true
 
     # test association with `other` here
   end
+end
 end
