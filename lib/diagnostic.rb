@@ -19,7 +19,10 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# BDD is meant to be directed towards the results, or behavior, that a product
+# is expected to produce overall with a final product.  Test Driven Development
+# selects each element of a product and then tests the component to ensure it's
+# working before continuing
 
 #
 # Question 2
