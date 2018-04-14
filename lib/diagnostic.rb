@@ -19,8 +19,8 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
-
+# TDD is when you write tests expecting them to fail untill you actually write the logic in your app to make the test pass.
+# BDD is the technique of coming up with what you believe the behavior should be for a user and write tests and code to match that behavior.
 #
 # Question 2
 #
@@ -28,7 +28,10 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  get '/examples'
+  expect(response).to be_success
+  examples_response = JSON.parse(response.body)
+  expect(response.count).to eq(examples.count)
 end
 
 #
@@ -38,7 +41,7 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  get '/examples/', params: { example: example }
 end
 
 #
@@ -56,7 +59,13 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
+    it 'routes GET /examples/:id to the examples#show action' do
+      expect(get('/examples/2')).to route_to(
+        controller: 'examples',
+        action: 'show',
+        id: '1'
+      )
+    end
   end
 end
 
@@ -74,7 +83,18 @@ RSpec.describe ExamplesController do
   end
 
   describe 'PATCH update' do
-    # your test(s) here
+    before(:each) do
+      patch :update, id: example.id, example: example_diff, format: :json
+    end
+
+    it 'is successful' do
+      expect(response).to be_success
+    end
+
+    it 'renders a JSON response' do
+      example_response = JSON.parse(response.body)
+      expect(example_response).not_to be_nil
+    end
   end
 end
 
@@ -90,7 +110,18 @@ RSpec.describe ExamplesController do
   end
 
   describe 'DELETE destroy' do
-    # your test(s) here
+    before(:each) {
+      delete :destroy, id: example.id, format: :json
+    }
+
+    it 'is successful' do
+      expect(response).to be_success
+    end
+
+    it 'returns an empty response body' do
+      # use before(:all) so we only delete once and test response object multiple times?
+      expect(response.body).to be_empty
+    end
   end
 end
 
@@ -103,8 +134,5 @@ end
 
 RSpec.describe Example do
   describe 'associations' do
-    # association method here
-
-    # test association with `other` here
   end
 end
