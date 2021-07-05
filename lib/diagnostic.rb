@@ -19,7 +19,7 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+# BDD is about testing behavior of code - not how it's implemented. So in a way it shouldn't have too many specifics. Even if the code you're testing is going to be implemented in a very specific way, your BDD test shouldn't test the code only in that specific way. It should make sure the code works with other values, so that if implementation changes in the future, it won't break. TDD is a process for writing tests. It suggests that one should start by writing a test that will fail, then writing code to pass the test. This should make a certain segment succeed, while other tests fail. Good, continue debugging one error at a time through your unit tests and eventually feature tests. Always write tests before the code.
 
 #
 # Question 2
@@ -28,7 +28,16 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+  describe 'GET /examples' do
+    it 'lists all examples' do
+      get '/examples'
+
+      expect(response).to be_success
+
+      examples_response = JSON.parse(response.body)
+      expect(examples_response.length).to eq(examples.count)
+    end
+  end
 end
 
 #
@@ -38,7 +47,14 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+  describe 'GET /examples/:id' do
+    it 'shows one example' do
+      get "/articles/#{example.id}"
+
+      expect(response).to be_success
+      example_response = JSON.parse(response.body)
+    end
+  end
 end
 
 #
@@ -56,7 +72,12 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
+    it 'creates an example' do
+      post '/articles', params: { example: example_params }
+
+      expect(response).to be_success
+      new_example = JSON.parse(resonse.body)
+    end
   end
 end
 
@@ -74,7 +95,17 @@ RSpec.describe ExamplesController do
   end
 
   describe 'PATCH update' do
-    # your test(s) here
+    it 'updates an exmaple' do
+      patch("/examples/#{example.id}", params: { example: example_diff })
+
+      expect(response).to be_success
+      updated_example = JSON.parse(response.body)
+      expect(updated_example[':body']).to eq(example_diff[':body'])
+    end
+    it 'doesn\'nt update an article with bad params' do
+      patch("/examples/#{example.id}", params: { example: nil })
+
+      expect(response).to eq(422)
   end
 end
 
@@ -90,7 +121,14 @@ RSpec.describe ExamplesController do
   end
 
   describe 'DELETE destroy' do
-    # your test(s) here
+    it 'deletes an example' do
+
+      example_response = JSON.parse(response.body)
+      expect(example_response).to be_empty
+      expect(example).to be_a(Object)
+      delete "/examples/#{example.id}"
+      expect(example).to be_nil
+    end
   end
 end
 
@@ -104,7 +142,9 @@ end
 RSpec.describe Example do
   describe 'associations' do
     # association method here
+    it 'associates with an other' do
 
+    end
     # test association with `other` here
   end
 end
