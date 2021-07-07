@@ -19,7 +19,11 @@ end
 # In a Ruby comment, explain Behavior Driven Development, how it is meant to be
 # used, and how it differs from Test Driven Development.
 
-# your answer here
+```rb
+BDD does not need the specific implementation details of the code to test that it is working, just how it behaves.
+
+TDD looks for implementation details and tests for specific values.
+```
 
 #
 # Question 2
@@ -28,7 +32,8 @@ end
 # responds successfully and lists all examples.
 
 RSpec.describe 'Examples API' do
-  # your test(s) here
+describe 'GET /examples' do
+  it 'responds successfully and lists all examples'
 end
 
 #
@@ -38,7 +43,10 @@ end
 # GET /examples/:id routes to the examples#show action.
 
 RSpec.describe 'routes for examples' do
-  # your test(s) here
+it 'routes GET /examples/:id to the examples#show action' do
+  expect(get('/examples/3')).to route_to( controller: 'examples',
+                                          action: 'show',
+                                          id: '3')
 end
 
 #
@@ -56,10 +64,9 @@ RSpec.describe ExamplesController do
   end
 
   describe 'POST create' do
-    # your test(s) here
-  end
+    before(:each) do
+      post :create, params: { article: example_params }  end
 end
-
 #
 # Question 5
 #
@@ -82,8 +89,6 @@ end
 # Question 6
 #
 # Test that a DELETE action from our ExamplesController is both successful
-# and renders an empty response.
-
 RSpec.describe ExamplesController do
   def example
     Example.first
